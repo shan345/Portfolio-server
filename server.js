@@ -1,43 +1,43 @@
 const express = require('express');
-const nodemailer = require('nodemailer');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
-dotenv.config()
+const mongoose = require('mongoose');
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// CORS - allow portfolio client and admin panel
+app.use(cors({
+    origin: [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'https://www.shantechworld.com',
+        process.env.CLIENT_URL
+    ].filter(Boolean),
+    credentials: true
+}));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    auth: {
-        user: process.env.mailID,
-        pass: process.env.pass  
-    }
-});
+// MongoDB connection
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('✅ MongoDB Connected'))
+    .catch(err => console.error('❌ MongoDB connection error:', err));
 
+// Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/hero', require('./routes/heroRoutes'));
+app.use('/api/about', require('./routes/aboutRoutes'));
+app.use('/api/skills', require('./routes/skillRoutes'));
+app.use('/api/projects', require('./routes/projectRoutes'));
+app.use('/api/contacts', require('./routes/contactRoutes'));
+app.use('/api/social', require('./routes/socialRoutes'));
 
-app.post('/send-email', async (req, res) => {
-    try {
-        const { name, email, message } = req.body;
-
-        await transporter.sendMail({
-            to: 'jamnishan345@gmail.com',
-            subject: `New Portfolio Message from ${name}`,
-            text: `Sender's Email: ${email}\nMessage: ${message}`
-        });
-
-        res.status(200).json({ message: 'Email sent successfully' });
-    } catch (error) {
-        console.error('Error sending email:', error);
-        res.status(500).json({ error: 'Failed to send email' });
-    }
-});
+// Health check
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
