@@ -34,6 +34,7 @@ app.use('/api/skills', require('./routes/skillRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/contacts', require('./routes/contactRoutes'));
 app.use('/api/social', require('./routes/socialRoutes'));
+app.use('/api/upload', require('./routes/uploadRoutes'));
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));

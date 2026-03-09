@@ -19,10 +19,10 @@ router.put('/', protect, async (req, res) => {
     try {
         let about = await About.findOne();
         if (!about) about = new About();
-        const { education, certifications, internship, resumeLink } = req.body;
+        const { education, certifications, experiences, resumeLink } = req.body;
         if (education) about.education = education;
         if (certifications) about.certifications = certifications;
-        if (internship) about.internship = internship;
+        if (experiences !== undefined) about.experiences = experiences;
         if (resumeLink !== undefined) about.resumeLink = resumeLink;
         about.updatedAt = Date.now();
         await about.save();

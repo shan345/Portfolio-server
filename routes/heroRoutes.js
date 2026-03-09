@@ -19,10 +19,11 @@ router.put('/', protect, async (req, res) => {
     try {
         let hero = await Hero.findOne();
         if (!hero) hero = new Hero();
-        const { greeting, typewriterStrings, resumeLink } = req.body;
+        const { greeting, typewriterStrings, resumeLink, profileImage } = req.body;
         if (greeting !== undefined) hero.greeting = greeting;
         if (typewriterStrings !== undefined) hero.typewriterStrings = typewriterStrings;
         if (resumeLink !== undefined) hero.resumeLink = resumeLink;
+        if (profileImage !== undefined) hero.profileImage = profileImage;
         hero.updatedAt = Date.now();
         await hero.save();
         res.json(hero);
